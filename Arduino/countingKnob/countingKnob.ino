@@ -1,29 +1,26 @@
 /*
+  Physical Computing – Interfacedesign Muthesius Kunsthochschule Kiel
 
+  Encoder als "counting knob".
 
-
-inspired by circuits at home
-http://www.circuitsathome.com/mcu/reading-rotary-encoder-on-arduino
+  Based on an example from circuits at home
+  http://www.circuitsathome.com/mcu/reading-rotary-encoder-on-arduino
 
 */
 
-#define encPinA 14                           // rotary encoder pin A
+// The common counter:
+int theNumber = 0;
+
+// Pins and state for the rotary encoder
+const int encPinA = 14;                           // rotary encoder pin A
+const int encPinB = 15;                           // rotary encoder pin B
 int encALast;
-#define encPinB 15                           // rotary encoder pin B
 
-int theNumber = 0; // 3.8.2011
-int val; 
-int segments[7] = {12,13,3,4,5,10,9};       // pins, the segments are attached to
 
-//int segments[7] = {3,4,9,11,12,5,6};       // pins, the segments are attached to
-int digits[2] = {7,11};                    // common anode of each digit
-int buttonPin = 2;                         // pin, where the start stop button is connected
-int lastButtonState;
-
-boolean timer = false;
-long myStartTime;
-
-long theSecond = 1000;
+// pins, the segments are attached to
+int segments[7] = {12,13,3,4,5,10,9};       
+// common anode of each digit
+int digits[2]   = {7,11};                    
 
 byte seven_seg_segments[10][7] = { 
   {1,1,1,1,1,1,0},  // = 0
@@ -39,24 +36,30 @@ byte seven_seg_segments[10][7] = {
 };
 
 void setup() {    
-//  Serial.begin(9600);                    // starts serial communication
-  pinMode(encPinA, INPUT);                    // set rotary encoder A pin as input
-  pinMode(encPinB, INPUT);                    // set rotary encoder B pin as input  
-  digitalWrite(encPinA, HIGH);                // switches internal drop down resistors on
-  digitalWrite(encPinB, HIGH);                // switches internal drop down resistors on
+  Serial.begin(9600);                    // starts serial communication
+  
+  // Setup for the rotary encoder:
+  pinMode(encPinA, INPUT_PULLUP);
+  pinMode(encPinB, INPUT_PULLUP);
 
-  pinMode(buttonPin,INPUT);
-
+  // Sets up the seven segment as outputs
   for (int i=0; i<7; i++){
-    pinMode(segments[i], OUTPUT);           // sets the seven segment outputs
+    pinMode(segments[i], OUTPUT);           
   }
 
+  // Sets up the common anodes as outputs
   for (int i=0; i<2; i++){
-    pinMode(digits[i], OUTPUT);             // sets the seven segment outputs 
+    pinMode(digits[i], OUTPUT);             
   }
 }
 
-void sevenSegWrite(int thePosition, int digit) {  // write a number to a seven segment digit
+
+/*
+  sevenSegWrite(int thePosition, int digit) is a wrapper function to abstract
+  the handling of the segment module.
+ */
+
+void sevenSegWrite(int thePosition, int digit) {
   for (int i = 0; i < 7; i++) {          
     if (seven_seg_segments[digit][i] == 1){  
       digitalWrite(segments[i], LOW);
@@ -71,13 +74,20 @@ void sevenSegWrite(int thePosition, int digit) {  // write a number to a seven s
   delayMicroseconds(200);
 }
 
-void clearDisplay() {                              // clear the display
+/*
+  clearDisplay() – Utility function to clear out any previous written
+  symbols.
+ */
+void clearDisplay() {
   for (int i=0; i<5; i++){
     digitalWrite(digits[i], LOW);
   }
 }
 
-void showNumber(){                                 // show the number
+/*
+  showNumber(int number);
+ */
+void showNumber() {
     char szZahl[1];
     sprintf(szZahl, "%d", theNumber);
     int ergebnis = szZahl[0] - '0';
@@ -92,21 +102,31 @@ void showNumber(){                                 // show the number
     clearDisplay();
 }
 
+/*
+  The actual Arduino loop function comes last
+ */
 void loop() {
   // read rotary encoder
   if (encALast!=digitalRead(encPinA)){
     if ((digitalRead(encPinA)==LOW)&&(digitalRead(encPinB)==LOW)) {
+      
       theNumber++;
+      
       if (theNumber>9) theNumber=0;
     }
     if ((digitalRead(encPinA)==LOW)&&(digitalRead(encPinB)==HIGH)) {
+      
       theNumber--;
+      
       if (theNumber<0) theNumber=9;
     }
   }
   
   encALast=digitalRead(encPinA);
   
+  /*
+    TODO clearDisplay and delay(1) really needed?
+  */
   clearDisplay();
   showNumber();
   delay(1);
