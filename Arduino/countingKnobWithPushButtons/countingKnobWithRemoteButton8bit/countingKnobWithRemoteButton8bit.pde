@@ -25,7 +25,7 @@ PFont font;
 Serial port;
 
 void setup() {
-  size(400, 200);
+  size(600, 200);
   boxX = width/3.0;
   boxY = height/2.0;
   rectMode(RADIUS); 
@@ -64,14 +64,14 @@ void draw()
     mouseOverBox = true;  
     // draw a line around the box and change its color:
     stroke(255); 
-    fill(readVal*16);
+    fill(readVal);
     // send an 'H' to indicate mouse is over square:
     port.write('H');
   } 
   else {
     // return the box to it's inactive state:
     stroke(153);
-    fill(readVal*16);
+    fill(readVal);
     // send an 'L' to turn the LED off: 
     //port.write('L');      
     //mouseOverBox = false;
@@ -88,7 +88,7 @@ void draw()
   
   fill(255);
   String numberText;
-  numberText = binary(readVal, 4)+ "B  0x" + hex(readVal, 1) + "  " + str(readVal);
+  numberText = binary(readVal, 8)+ "B  0x" + hex(readVal, 2) + "  " + str(readVal);
   text(numberText, 10, 50);
 }
 

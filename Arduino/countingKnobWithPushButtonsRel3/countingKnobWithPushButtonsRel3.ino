@@ -3,6 +3,10 @@ inspired by circuits at home
 http://www.circuitsathome.com/mcu/reading-rotary-encoder-on-arduino
 */
 
+const int rgbPinRed = 9;
+const int rgbPinGreen = 10;
+const int rgbPinBlue = 11;
+
 const int encPinA = A2;                           // rotary encoder pin A
 const int encPinB = A3;                           // rotary encoder pin B
 int encALast;
@@ -19,6 +23,7 @@ int buttonUpState;
 int buttonDownState;
 int lastButtonUpState;
 int lastButtonDownState;
+
 
 byte seven_seg_segments[16][7] = { 
   {1,1,1,1,1,1,0},  // = 0
@@ -60,16 +65,16 @@ byte leds_segments[16][4] = {
 
 void setup() {    
   Serial.begin(9600);                    // starts serial communication
-  pinMode(encPinA, INPUT);                    // set rotary encoder A pin as input
-  pinMode(encPinB, INPUT);                    // set rotary encoder B pin as input  
+  //pinMode(encPinA, INPUT);                    // set rotary encoder A pin as input
+  //pinMode(encPinB, INPUT);                    // set rotary encoder B pin as input  
   //digitalWrite(encPinA, HIGH);                // switches internal drop down resistors on
   //digitalWrite(encPinB, HIGH);                // switches internal drop down resistors on
 
-  pinMode(buttonUpPin,INPUT);
-  pinMode(buttonDownPin, INPUT);
+  //pinMode(buttonUpPin,INPUT);
+  //pinMode(buttonDownPin, INPUT);
   
   for (int i=0; i<7; i++){
-    pinMode(segments[i], OUTPUT);           // sets the seven segment outputs
+    //pinMode(segments[i], OUTPUT);           // sets the seven segment outputs
   }
 }
 
@@ -96,6 +101,17 @@ void ledsWrite(int digit) {
   
 }
 
+void rgbLedsWrite(int digit) {
+  analogWrite(rgbPinRed, theNumber);
+  analogWrite(rgbPinGreen, theNumber);
+  analogWrite(rgbPinBlue, theNumber);
+
+  analogWrite(6, theNumber & 0xf0);
+  analogWrite(5, theNumber & 0xf0);
+  analogWrite(3, theNumber & 0xf0);
+  
+}
+
 void showNumber(){                                 // show the number
 
     if (sendNumber != theNumber) {
@@ -106,42 +122,43 @@ void showNumber(){                                 // show the number
 
     int ergebnis = theNumber&0x0f;
     if (ergebnis>-1){
-      sevenSegWrite(ergebnis);
+      //sevenSegWrite(ergebnis);
       //ledsWrite(ergebnis);
+      rgbLedsWrite(ergebnis);
       delayMicroseconds(10);
     } else {
-      sevenSegWrite(0);
+      //sevenSegWrite(0);
       //ledsWrite(0);
+      rgbLedsWrite(0);
       delayMicroseconds(10);
     }
 }
 
 void nextNumber() {
       theNumber++;
-      if (theNumber>maxNumber) theNumber=0;   
+      if (theNumber>maxNumber) theNumber=0;
 }
 
 void prevNumber() {
       theNumber--;
-      if (theNumber<0) theNumber=maxNumber;  
+      if (theNumber<0) theNumber=maxNumber;
 }
-
 
 void loop() {
   // read rotary encoder
-  int encPinAstate = digitalRead(encPinA);
-  int encPinBstate = digitalRead(encPinB);
+  int encPinAState = digitalRead(encPinA);
+  int encPinBState = digitalRead(encPinB);  
   
-  if (encALast!=encPinAstate){
-    if ((encPinAstate==HIGH)&&(encPinBstate==HIGH)) {
+  if (encALast!=encPinAState){
+    if ((encPinAState==HIGH)&&(encPinBState==HIGH)) {
       nextNumber();
     }
-    if ((encPinAstate==HIGH)&&(encPinBstate==LOW)) {
+    if ((encPinAState==HIGH)&&(encPinBState==LOW)) {
       prevNumber();
     }
   }
   
-  encALast=encPinAstate;
+  encALast=encPinAState;
   
   buttonUpState = digitalRead(buttonUpPin);
   // compare the buttonState to its previous state
@@ -150,7 +167,6 @@ void loop() {
     if (buttonUpState == HIGH) {
       // if the current state is HIGH then the button wend from off to on:
       nextNumber();
-      //Serial.println("inc");
     } 
   }
   // save the current state as the last state, 
@@ -181,13 +197,12 @@ void loop() {
     // if it's a capital H (ASCII 72), turn on the LED:
     if (incomingByte == 'H') {
       nextNumber();
-   } 
+    } 
     // if it's an L (ASCII 76) turn off the LED:
     if (incomingByte == 'L') {
       prevNumber();
     }
   }
-
   
   delay(5);
 }
