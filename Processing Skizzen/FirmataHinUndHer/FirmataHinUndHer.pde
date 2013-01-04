@@ -46,8 +46,8 @@ void draw()
   delay(1000);
   
   // Stelle das Grau des Hintergundes nach dem Wert des Sensors ein:
-  int sensorWert = map( meinArduino.readAnalog(0), 0, 1023, 0, 255);
-  background(sensorWert);
+  int sensorWert = meinArduino.readAnalog(0);
+  background( map(sensorWert, 0, 1023, 0, 255) );
   
 }
 

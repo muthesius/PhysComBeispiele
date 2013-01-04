@@ -17,11 +17,13 @@ int lastA,lastB;
 
 
 // pins, the segments are attached to
-int segments[7] = {6,7,8,9,10,11,12};
+int segmentPins[7] = {6,7,8,9,10,11,12};
 
-// Number of gits stored in the seven_seg_segments array:
+// Number of digits stored in the seven_seg_segments array:
 const int NUM_DIGITS = 10;
-byte seven_seg_segments[NUM_DIGITS][7] = {
+
+// The digit graphics as two dimensional array
+byte graphics[NUM_DIGITS][7] = {
   {1,1,1,1,1,1,0},  // = 0
   {0,0,1,1,0,0,0},  // = 1
   {1,1,0,1,1,0,1},  // = 2
@@ -38,11 +40,11 @@ byte seven_seg_segments[NUM_DIGITS][7] = {
 void displayNumber(int number) {
   int digit = constrain(number,0,NUM_DIGITS);
   for (int i = 0; i < 7; i++) {
-    if (seven_seg_segments[digit][i] == 1){
-      digitalWrite(segments[i], HIGH);
+    if (graphics[digit][i] == 1){
+      digitalWrite(segmentPins[i], HIGH);
     }
     else {
-      digitalWrite(segments[i], LOW);
+      digitalWrite(segmentPins[i], LOW);
     }
   }
 }
@@ -82,6 +84,7 @@ void loop(){
 
     Serial.print("Counter:\t");
     Serial.println(counter);
+    
     displayNumber(counter);
   }
 
