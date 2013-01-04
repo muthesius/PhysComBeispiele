@@ -59,8 +59,8 @@ void setup() {
 
   // Sets up the seven segment as outputs
   for (int i=0; i<7; i++){
-    pinMode(segments[i], OUTPUT);
-    digitalWrite(segments[i], LOW);
+    pinMode(segmentPins[i], OUTPUT);
+    digitalWrite(segmentPins[i], LOW);
   }
   
   displayNumber(counter);
