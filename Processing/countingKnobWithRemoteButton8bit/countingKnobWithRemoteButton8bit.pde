@@ -1,10 +1,7 @@
-
 // mouseover serial 
-
 // Demonstrates how to send data to the Arduino I/O board, in order to 
 // turn ON a light if the mouse is over a square and turn it off 
 // if the mouse is not. 
-
 // created 2003-4
 // based on examples by Casey Reas and Hernando Barragan
 // modified 30 Aug 2011
